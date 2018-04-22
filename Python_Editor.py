@@ -32,7 +32,9 @@ class MainApp(QMainWindow, FORM_CLASS):
         self.actionZoom_out.triggered.connect(self.Zoom_Out)
         self.actionZoom_out.setShortcut("Ctrl+-")
         self.actionUndo.triggered.connect(self.Undo)
+        self.actionUndo.setShortcut("Ctrl+Shift+U")
         self.actionRedo.triggered.connect(self.Redo)
+        self.actionRedo.setShortcut("Ctrl+Shift+R")
 
     def New_file(self):
         global file_name
@@ -87,17 +89,20 @@ def format(color , style = ''):
         _format.setFontWeight(QFont.Bold)
     elif "italic" in style :
         _format.setFontItalic(True)
+    elif "underline" in style :
+        _format.setFontUnderline(True)
 
     return _format
 
 STYLES = {
     'keyword': format('cyan' ,'bold'),
-    'keyword_2' : format('blue' ,'bold'),
     'operator': format('red'),
     'brace': format('brown' , 'bold'),
     'comment': format('gray', 'italic'),
     'string': format('magenta'),
     'numbers': format('yellow'),
+    'class'    : format('blue' , 'bold') ,
+    'error'    : format('white' , 'underline') ,
 }
 
 #>---------------------------------------------------------------------------------------------------------------------<
@@ -108,16 +113,13 @@ class Recognition(QSyntaxHighlighter):
         'del', 'elif', 'else', 'except', 'finally', 'print' ,
         'for', 'from', 'global', 'if', 'import', 'show' ,
         'return' , 'try', 'while', 'self' , 'open' , 'close',
-    ]
-
-    keyword_2 = [
         '__init__' , '__main__' , '__name__' ,'True' ,
         'False' , 'None' , 'and' , 'or' , 'not' , 'pass' ,
         'is' , 'in'
     ]
 
     operators = [
-        '=' , '!' , '==', '!=', '<', '<=', '>', '>=',
+        '=' , '!' , '==', '!=', '<', '<=', '>', '>=', '%' , '\+' , '-' , '/' , '\*' ,
     ]
 
     braces = [
@@ -131,16 +133,17 @@ class Recognition(QSyntaxHighlighter):
 
         rules += [(r'\b%s\b' % w, 0, STYLES['keyword'])
                   for w in Recognition.keywords]
-        rules += [(r'\b%s\b' % w, 0, STYLES['keyword_2'])
-                  for w in Recognition.keyword_2]
         rules += [(r'%s' % o, 0, STYLES['operator'])
                   for o in Recognition.operators]
         rules += [(r'%s' % b, 0, STYLES['brace'])
                   for b in Recognition.braces]
-        rules += [(r'#[^\n]*', 0, STYLES['comment']) ,
+        rules += [(r'//[^\n]*', 0, STYLES['comment']) ,
+                  (r'"[^"\\]*(\\.[^"\\]*)*.', 0, STYLES['error']),
                   (r'"[^"\\]*(\\.[^"\\]*)*"', 0, STYLES['string']),
-                  (r'\'[^\'\\]*(\\.[^\'\\]*)*\'', 0, STYLES['string'])]
-        rules += [(r'\b[+-]?[0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?\b', 0, STYLES['numbers'])]
+                  (r"'[^'\\]*(\\.[^'\\]*)*.", 0, STYLES['error']),
+                  (r'\'[^\'\\]*(\\.[^\'\\]*)*\'', 0, STYLES['string']),
+                  (r'\b?[0-9]+[lL]?\b', 0, STYLES['numbers']),
+                  (r'\bclass\b\s*(\w+)', 1, STYLES['class'])]
 
         self.rules = [(QRegExp(pat), index, fmt)
                       for (pat, index, fmt) in rules]
