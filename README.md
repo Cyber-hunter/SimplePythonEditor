@@ -8,5 +8,5 @@
 # install Linux
   pip3 install pyqt5
   
-#Usage
+# Usage
   python3 Python_Editor.py
