@@ -1,8 +1,8 @@
 # SimplePythonEditor
-  -Simple Python Editor with PyQt5 QTextHighlighter , Qtcolor .
+  -Simple Python Editor with PyQt5 QTextHighlighter , Qtcolor .\n
   -Simple Interpreter Calculate 2 numbers .
   # example
-   if enter 1(+|-|*|/)2 ends with (;) it will print the result .
+   if enter 1(+|-|*|/)2 ends with (;) it will print the result .\n
         1+2;
 # Requirements
   python3
